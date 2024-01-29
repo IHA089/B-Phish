@@ -5,7 +5,7 @@ def runner_create():
     file = open("/usr/local/bin/bphish",'w')
     file.write("#!/bin/bash")
     file.write("\n")
-    file.write("python3 /usr/share/ihaahi/bphish/start.py")
+    file.write("python3 /usr/share/ihaahi/B-Phish/start.py")
     file.close()
     os.system("chmod +x /usr/local/bin/bphish")
     print("type `bphish` to start this script\n")
