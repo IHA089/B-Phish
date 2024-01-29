@@ -98,20 +98,7 @@ var reader="";
 var jn = navigator.javaEnabled() ? 'Yes' : 'No';
 var ci = navigator.connection && navigator.connection.downlink
 reader = "Platform Type ::: "+navigator.platform+"|oscpu ::: "+navigator.osCpu+"|Screen Size ::: "+window.screen.width+"x"+window.screen.height+"|ViewPort Size ::: "+window.innerWidth+"x"+window.innerHeight+"|cookies Enable ::: "+navigator.cookiesEnabled+"|Javascript Enable ::: "+jn+"|Internet Speed ::: "+ci+"Mbps";
-
-if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            reader = reader+"|Location according browser :::  https://www.google.com/maps?q="+position.coords.latitude+","+position.coords.longitude
-            sendDataAndRedirect(reader);
-        },
-        (error) => {
-            sendDataAndRedirect(reader);
-        }
-    );
-} else {
-    sendDataAndRedirect(reader);
-}
+sendDataAndRedirect(reader);
 </script>
 </body>
 </html>
@@ -129,7 +116,6 @@ def browser_data_filter(data):
     data = data.replace("ce:", "cookies Enable :::  ")
     data = data.replace("jn:", "Javascript Enable  :::  ")
     data = data.replace("ci:", "Internet Speed  :::  ")
-    data = data.replace("lat:", "Location according browser :::  https://www.google.com/maps?q=")
     newdata = data.split("|")
     for ndata in newdata:
         print(ndata)
@@ -145,6 +131,7 @@ def post_data_reader(client_socket, request):
         if content_length_match:
             content_length = int(content_length_match.group(1))
             body = client_socket.recv(content_length).decode('utf-8')
+            client_socket.sendall('HTTP/1.1 200 OK\nContent-Type: application/json\n\n{"status": "success"}'.encode('utf-8'))
             browser_data_filter(body)
         else:
             client_socket.sendall('HTTP/1.1 400 Bad Request\n\nMissing Content-Length header'.encode('utf-8'))
@@ -248,4 +235,3 @@ def main():
 
 if __name__== "__main__":
     main()
-
