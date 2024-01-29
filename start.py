@@ -47,7 +47,9 @@ def get_ip_info(ip):
             print("timezone ::: {}".format(read_data['timezone']))
         
 def create_public_connection():
-    command = "ssh -R 80:0.0.0.0:4567 serveo.net -y > forward.txt &"
+    pwd = os.getcwd()
+    file = pwd+"/forward.txt"
+    command = "ssh -R 80:0.0.0.0:4567 serveo.net -y > {} &".format(file)
     subprocess.Popen(command, shell=True)
 
 def home_logo():
@@ -150,8 +152,11 @@ def post_data_reader(client_socket, request):
 
 
 def get_public_url():
-    file = open("forward.txt", 'r')
+    pwd = os.getcwd()
+    file = pwd+"/forward.txt"
+    file = open(file, 'r')
     read_data = file.read()
+    os.remove(file)
     file.close()
     new_data = read_data.replace("Forwarding HTTP traffic from", "")
     new_data = new_data.replace("\n","")
