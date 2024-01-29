@@ -153,10 +153,10 @@ def post_data_reader(client_socket, request):
 
 def get_public_url():
     pwd = os.getcwd()
-    file = pwd+"/forward.txt"
-    file = open(file, 'r')
+    ffile = pwd+"/forward.txt"
+    file = open(ffile, 'r')
     read_data = file.read()
-    os.remove(file)
+    os.remove(ffile)
     file.close()
     new_data = read_data.replace("Forwarding HTTP traffic from", "")
     new_data = new_data.replace("\n","")
