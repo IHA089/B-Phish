@@ -1,40 +1,50 @@
 import os
 import sys
+import platform
 
-def runner_create():
-    file = open("/usr/local/bin/bphish",'w')
-    file.write("#!/bin/bash")
-    file.write("\n")
-    file.write("python3 /usr/share/ihaahi/B-Phish/start.py")
-    file.close()
-    os.system("chmod +x /usr/local/bin/bphish")
-    print("type `bphish` to start this script\n")
-
-def iha089_dir():
-    dir_path = "/usr/share/ihaahi"
-    if not os.path.exists(dir_path) and os.path.isdir(dir_path):
-        os.mkdir("/usr/share/ihaahi")
-
-def check_root():
-    return os.geteuid() == 0
-
-def get_working_dir():
-    return os.getcwd()
-
-def main():
-    if sys.platform.startswith("linux"):
-        if check_root():
-            iha089_dir()
-            pwd = get_working_dir()
-            cmd = "cp -r {} /usr/share/ihaahi".format(pwd)
-            os.system(cmd)
-            runner_create()
-        else:
-            print("Please run with root permission\n")
-    elif sys.platform.startswith("win"):
-        print("type `python start.py` here")
+def install_ngrok():
+    import requests
+    import tarfile
+    import zipfile
+    os_name = platform.system()
+    architecture = platform.architecture()[0]
+    if os_name == "Linux":
+        print("Downloading ngrok for linux...")
+        url = "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
+        file_name = "ngrok.tgz"
+    elif os_name == "Windows" and architecture == "32bit":
+        print("Downlading ngrok for window 32 bit...")
+        url = "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-386.zip"
+        file_name = "ngrok.zip"
+    elif os_name == "Windows" and architecture == "64bit":
+        print("Downloading ngrok for window 64 bit...")
+        url = "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip"
+        file_name = "ngrok.zip"
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(file_name, "wb") as file:
+            file.write(response.content)
+        if os_name == "Linux":
+            with tarfile.open(file_name, "r:gz") as tar:
+                tar.extractall()
+            print("ngrok downloaded successfully.")
+            os.remove(file_name)
+        elif os_name == "Window":
+            with zipfile.ZipFile(file_name, "r") as zip_ref:
+                zip_ref.extractall()
+            print("ngrok downloaded successfully.")
+            os.remove(file_name)
     else:
-        print("Your os not support\n")
+        print("Failed to download the file.")
+
+def setup_ngrok():
+    print("Signup on this(https://dashboard.ngrok.com/signup) page and paste authtoken")
+    token = input("Enter ngrok token ::: ")
+    cmd = "./ngrok config add-authtoken {}".format(token)
+    os.system(cmd)
+    print("Installation success")
+    print("type `python3 bphish.py` to activate this tool")
 
 if __name__=="__main__":
-    main()    
+    install_ngrok()
+    setup_ngrok()
